@@ -1,15 +1,17 @@
 import { useEffect, useRef, memo, useState } from 'react';
+import 'amazon-connect-streams'
+import { useDispatch } from '../context/hooksContext.jsx'
+
+
+
 
 const ConnectCCP = () => {
     const containerRef = useRef(null);
     const agentRef = useRef(null);
     const contactRef = useRef(null);
 
-    const [agentStates, setAgentStates] = useState([]);
-    const [currentStatus, setCurrentStatus] = useState('Initializing...');
-    const [agentName, setAgentName] = useState('');
-    const [isInitialized, setIsInitialized] = useState(false);
 
+    const dispatch = useDispatch();
 
     // init ccp 
     useEffect(() => {
@@ -57,42 +59,55 @@ const ConnectCCP = () => {
             // CORRECT WAY: Use callback to get agent
             window.connect.agent((agent) => {
                 agentRef.current = agent;
-                setAgentName(agent.getName());
+
+
+                //Get agent name
+                const name = agent.getName()
+                dispatch({ type: 'name', payload: name });
 
                 // Get available agent states
                 const states = agent.getAgentStates();
-                setAgentStates(states);
+                dispatch({ type: 'available_states', payload: states });
 
                 // Get current status
-                const currentState = agent.getState();
-                setCurrentStatus(currentState.name);
+                const currentState = agent.getAvailabilityState()
+                dispatch({ type: 'current_status', payload: currentState.state });
 
-                setIsInitialized(true);
+
+                //ccp initiation state
+                dispatch({ type: 'isInitialise', payload: true });
+
 
                 // Listen for status changes
                 agent.onRefresh((updatedAgent) => {
-                    const state = updatedAgent.getState();
-                    setCurrentStatus(state.name);
+                    const state = updatedAgent.getAvailabilityState().state
+                    dispatch({ type: 'current_status_onRefresh', payload: state });
                 });
 
-                console.log('Agent initialized:', agent.getName());
             });
 
             // Handle contacts
             window.connect.contact((contact) => {
                 contactRef.current = contact;
-                console.log('Contact received:', contact.getContactId());
+
+                //CCP assigned contact id
+                const assignedContactId = contact.getContactId();
+                dispatch({ type: 'assigned_contact_id', payload: assignedContactId });
+                console.log('Contact received:', assignedContactId);
 
                 contact.onConnecting(() => {
+                    dispatch({ type: 'current_status', payload: 'Call_Connecting' });
                     console.log('Contact connecting');
                 });
 
                 contact.onConnected(() => {
+                    dispatch({ type: 'current_status', payload: 'Call_Connected' });
                     console.log('Contact connected');
                 });
 
                 contact.onEnded(() => {
                     console.log('Contact ended');
+                    dispatch({ type: 'current_status', payload: 'Call_Ended' });
                     contactRef.current = null;
                 });
             });
@@ -100,12 +115,13 @@ const ConnectCCP = () => {
             // Handle authentication failures
             window.connect.core.onAuthFail(() => {
                 console.error('Authentication failed');
-                setCurrentStatus('Auth Failed');
+                dispatch({ type: 'current_status', payload: 'Authentication_Failed' });
+
             });
 
         } catch (err) {
             console.error('CCP Init Error:', err);
-            setCurrentStatus('Error: ' + err.message);
+            dispatch({ type: 'current_status', payload: 'CCP_Init_Error' });
         }
     };
 
