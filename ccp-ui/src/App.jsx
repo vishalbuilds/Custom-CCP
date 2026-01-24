@@ -1,16 +1,24 @@
-import { useMemo, useState, useEffect } from "react";
-import ConnectCCP from "./components/ConnectCCP.jsx";
-import { Provider } from "./context/hooksContext.jsx";
+import ConnectCCP from "./components/ccp/ConnectCCP.jsx";
+import Footer from "./components/Footer/Footer.jsx";
+import Header from "./components/Header/Header.jsx";
+import LoadingPortal from "./components/modal/LoadingPortal.jsx";
+import { useAppRef } from "./context/ProviderCtx";
 
 function App() {
-
-
+  const { agentRef } = useAppRef();
 
   return (
-    <Provider>
+    <>
       <ConnectCCP />
-      <h1>Amazon Connect CCP - Agent State: </h1>
-    </Provider>
+      <LoadingPortal agentRef={agentRef} />
+      {agentRef && (
+        <>
+          <Header />
+          <h1>Amazon Connect CCP - Agent State:</h1>
+          <Footer />
+        </>
+      )}
+    </>
   );
 }
 
