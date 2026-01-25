@@ -1,7 +1,8 @@
 import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
+import {changeStatus} from './headerHandler.js'
 
-export default function StatusDropdown({ currentStatus, availableStatuses, dropdownRef }) {
+export default function StatusDropdown({ currentStatus, availableStatuses, dropdownRef, agentRef, state }) {
 
     const [isStatusOpen, setIsStatusOpen] = useState(false);
 
@@ -14,7 +15,7 @@ export default function StatusDropdown({ currentStatus, availableStatuses, dropd
     return (<div id='status-dropdown' className="relative" ref={dropdownRef}>
         <button
             onClick={() => setIsStatusOpen(!isStatusOpen)}
-            className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-xl transition-all min-w-[150px]"
+            className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-xl transition-all min-w-[150px]"
         >
             <span className="font-semibold text-white">
                 {currentStatus ? formatLabel(currentStatus) : "Select Status"}
@@ -35,7 +36,7 @@ export default function StatusDropdown({ currentStatus, availableStatuses, dropd
                     <button
                         key={targetStatus?.name || targetStatus?.type || targetStatus}
                         onClick={() => {
-                            headerHandler.changeStatus(targetStatus, agentRef, state)
+                            changeStatus(targetStatus, agentRef, state)
                             setIsStatusOpen(false);
                         }}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50 

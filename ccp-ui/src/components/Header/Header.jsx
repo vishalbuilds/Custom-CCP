@@ -22,7 +22,7 @@ export default function Header() {
 
 
     return (
-        <header className="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white flex items-center justify-between shadow-lg">
+        <header className="bg-gradient-to-r from-blue-700 to-indigo-800 p-1 text-white flex items-center justify-between shadow-lg">
             <AgentName agentName={state.agentName} />
             <div className="flex items-center gap-6">
                 <StatusDuration />
@@ -30,6 +30,8 @@ export default function Header() {
                     currentStatus={state.currentStatus}
                     availableStatuses={state.availableStatus}
                     dropdownRef={dropdownRef}
+                    agentRef={agentRef}
+                    state={state}
                 />
                 <SettingsButton />
             </div>
