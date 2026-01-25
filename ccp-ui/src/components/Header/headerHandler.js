@@ -1,3 +1,5 @@
+import { CCP_CONFIG } from "../../ccpConfig";
+
 export function changeStatus(targetStatus, agentRef, state) {
   if (state.availableStatus.includes(targetStatus)) {
     agentRef.current.setState(targetStatus, {
@@ -7,6 +9,33 @@ export function changeStatus(targetStatus, agentRef, state) {
   } else {
     console.error("Status not found:", statusName);
   }
+}
+
+export function downloadCCPLogs() {
+  try {
+    console.log("Downloading logs...");
+    connect.getLog().download();
+    console.log("Logs downloaded successfully.");
+  } catch (error) {
+    console.error("Error downloading logs:", error);
+  }
+}
+
+export function ccpSignOut(agentRef, state) {
+  if (state.currentStatus === "Offline") {
+    signOut();
+  } else {
+    changeStatus("Offline", agentRef, state).then(signOut).catch(console.error);
+  }
+}
+
+function signOut() {
+  const logoutEndpoint = `${CCP_CONFIG.ccp_domain}/logout`;
+  fetch(logoutEndpoint, { credentials: "include", mode: "no-cors" }).then(
+    () => {
+      connect.core.getUpstream().sendUpstream(connect.EventType.TERMINATE);
+    },
+  );
 }
 
 // //agent status duration timers

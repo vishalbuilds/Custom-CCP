@@ -1,21 +1,36 @@
 import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
-import {changeStatus} from './headerHandler.js'
+import { useState, useRef, useEffect } from 'react'
+import { changeStatus } from './headerHandler.js'
 
-export default function StatusDropdown({ currentStatus, availableStatuses, dropdownRef, agentRef, state }) {
+export default function StatusDropdown({ currentStatus, availableStatuses, agentRef, state }) {
 
     const [isStatusOpen, setIsStatusOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsStatusOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     const formatLabel = (status) => {
         // Handle both string and object cases
         const statusName = typeof status === 'string' ? status : status?.name || status?.type || 'Unknown';
         return statusName.charAt(0).toUpperCase() + statusName.slice(1);
     };
+
+
+
+
+
     return (<div id='status-dropdown' className="relative" ref={dropdownRef}>
         <button
             onClick={() => setIsStatusOpen(!isStatusOpen)}
-            className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-xl transition-all min-w-[150px]"
+            className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-xl transition-all min-w-37.5"
         >
             <span className="font-semibold text-white">
                 {currentStatus ? formatLabel(currentStatus) : "Select Status"}
@@ -27,7 +42,7 @@ export default function StatusDropdown({ currentStatus, availableStatuses, dropd
         </button>
 
         {isStatusOpen && (
-            <div className="absolute right-0 mt-3 w-37 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-[120] animate-in fade-in slide-in-from-top-2">
+            <div className="absolute right-0 mt-3 w-37 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-120 animate-in fade-in slide-in-from-top-2">
                 <p className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase">
                     Set Your Status
                 </p>

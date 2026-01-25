@@ -32,7 +32,7 @@ export default function LoadingPortal({ agentRef }) {
                 console.log("CCP failed to initialize in 15s. Reloading app...");
                 window.location.reload(true); // 'true' forces a reload from the server
             }
-        }, 40000);
+        }, 10000);
 
         // Cleanup
         return () => {
@@ -46,7 +46,7 @@ export default function LoadingPortal({ agentRef }) {
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-xl cursor-wait"
+            className="fixed inset-0 z-99999 flex items-center justify-center bg-black/40 backdrop-blur-xl cursor-wait"
             // Disable clicks on the entire screen
             onClick={(e) => {
                 e.preventDefault();
@@ -65,14 +65,14 @@ export default function LoadingPortal({ agentRef }) {
                     CCP is initializing...
                 </h2>
 
-                <p className="text-sm text-gray-500 text-center max-w-[250px]">
+                <p className="text-sm text-gray-500 text-center max-w-62.5">
                     Connecting to Amazon Connect. The app will automatically refresh if this takes too long.
                 </p>
 
                 {/* Visual Timer Bar */}
                 <div className="w-full h-1 bg-gray-100 rounded-full mt-6 overflow-hidden">
                     <div
-                        className="h-full bg-blue-500 transition-all duration-[15000ms] ease-linear"
+                        className="h-full bg-blue-500 transition-all duration-15000 ease-linear"
                         style={{ width: isVisible ? '100%' : '0%' }}
                     ></div>
                 </div>

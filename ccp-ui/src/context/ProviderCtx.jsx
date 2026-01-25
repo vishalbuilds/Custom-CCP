@@ -12,18 +12,22 @@ const initialState = {
     contact: '',
     availableStatus: [],
     currentStatus: '',
-    callStatus: ''
+    callStatus: '',
+    signOut: false,
 };
 
 function Reducer(state, action) {
     switch (action.type) {
-        //ccp init value
+        //ccp  value
         case 'CCP_INIT_SUCCESS':
             return { ...state, ccp_status: "Initialized" };
         case 'CCP_INIT_FAILURE':
             return { ...state, ccp_status: "CCP_Init_Failed" };
         case 'AUTH_FAILED':
             return { ...state, ccp_status: "Authentication_Failed" };
+        case 'CCP_SIGNOUT':
+            return { ...state, signOut: true };
+        //
         //agent value
         case 'AGENT_INIT_FAILURE':
             return { ...state, agent_status: "Init_Failed", ccp_status: "Agent_Init_Failed" };

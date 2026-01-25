@@ -3,13 +3,12 @@ import { useEffect, useRef, memo } from 'react';
 import { useAPPDispatch, useAppRef } from '../../context/ProviderCtx.jsx'
 import { agentHandler } from './agentHandler.js';
 import { contactHandler } from './contactHandler.js'
+import { CCP_CONFIG } from '../../ccpConfig.js';
 
 const ConnectCCP = () => {
     const containerRef = useRef(null);
-    // const agentRef = useRef(null);
-    // const contactRef = useRef(null);
     const dispatch = useAPPDispatch();
-    const { agentRef } = useAppRef();
+    const { agentRef, contactRef } = useAppRef();
 
 
 
@@ -49,7 +48,7 @@ const ConnectCCP = () => {
 
         try {
             window.connect.core.initCCP(containerRef.current, {
-                ccpUrl: "https://vishaltesting-aws-connect.my.connect.aws/connect/ccp-v2/",
+                ccpUrl: `${CCP_CONFIG.ccp_domain}/connect/ccp-v2/`,
                 loginPopup: true,
                 loginPopupAutoClose: true,
                 softphone: {
@@ -58,6 +57,10 @@ const ConnectCCP = () => {
                 pageOptions: {
                     enableAudioDeviceSettings: false,
                     enablePhoneTypeSettings: false
+                },
+                logConfig: {
+                    logLevel: connect.LogLevel.DEBUG,
+                    echoLevel: connect.LogLevel.DEBUG,
                 }
             });
 
@@ -74,6 +77,7 @@ const ConnectCCP = () => {
                     console.error("Agent init failed:", err);
                 }
             });
+
 
             // Handle contacts
             window.connect.contact((contact) => {
