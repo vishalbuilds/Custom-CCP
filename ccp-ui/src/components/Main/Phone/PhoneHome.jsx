@@ -17,14 +17,14 @@ export default function PhoneHome() {
     );
 
     return (
-        <>
-            < div className="flex-1 flex flex-col items-center justify-center p-10 text-center gap-4">
-                {button("Dialpad", "DIALPAD")}
-                {button("Quick Connects", 'QC')}
-                <p className=" text-slate-400" >No Active Calls</p>
+        < div className="flex-1 flex flex-col items-center mb-30 justify-center p-10 text-center gap-4">
+            <p className=" text-slate-400 font-semibold text-3xl mb-4" >No Active Calls</p>
+            {button("Dialpad", "DIALPAD")}
+            {button("Quick Connects", 'QC')}
 
-            </div >
-        </>
+
+        </div >
+
     );
 
 }

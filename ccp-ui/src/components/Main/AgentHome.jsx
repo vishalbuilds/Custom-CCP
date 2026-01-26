@@ -1,5 +1,5 @@
 import { UserCircle } from "lucide-react";
-export default function Home({ agentName }) {
+export default function AgentHome({ agentName }) {
     return (
         <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
             <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mb-6">
