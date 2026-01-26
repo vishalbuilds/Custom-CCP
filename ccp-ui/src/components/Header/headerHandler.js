@@ -3,11 +3,11 @@ import { CCP_CONFIG } from "../../ccpConfig";
 export function changeStatus(targetStatus, agentRef, state) {
   if (state.availableStatus.includes(targetStatus)) {
     agentRef.current.setState(targetStatus, {
-      success: () => console.log("Status changed to:", statusName),
+      success: () => console.log("Status changed to:", targetStatus),
       failure: (err) => console.error("Failed to change status:", err),
     });
   } else {
-    console.error("Status not found:", statusName);
+    console.error("Status not found:", targetStatus);
   }
 }
 
@@ -21,12 +21,40 @@ export function downloadCCPLogs() {
   }
 }
 
-export function ccpSignOut(agentRef, state) {
-  if (state.currentStatus === "Offline") {
+// export function ccpSignOut(agentRef, state) {
+//   if (state.currentStatus === offline) {
+//     signOut();
+//   } else {
+//     changeStatus(offline, agentRef, state).then(signOut).catch(console.error);
+//   }
+// }
+
+export function ccpSignOut() {
+  const agent = new window.connect.Agent();
+  if (
+    agent.getAvailabilityState().type === window.connect.AgentStatusType.OFFLINE
+  ) {
     signOut();
   } else {
-    changeStatus("Offline", agentRef, state).then(signOut).catch(console.error);
+    setAgentOffline().then(signOut).catch(console.error);
   }
+}
+
+function setAgentOffline() {
+  return new Promise((resolve, reject) => {
+    const agent = new window.connect.Agent();
+    const offlineState = agent
+      .getAgentStates()
+      .find((state) => state.type === window.connect.AgentStateType.OFFLINE);
+    agent.setState(
+      offlineState,
+      {
+        success: resolve,
+        failure: reject,
+      },
+      { enqueueNextState: true },
+    );
+  });
 }
 
 function signOut() {

@@ -1,13 +1,13 @@
 import 'amazon-connect-streams'
 import { useEffect, useRef, memo } from 'react';
-import { useAPPDispatch, useAppRef } from '../../context/ProviderCtx.jsx'
+import { useAppDispatch, useAppRef } from '../../context/ProviderCtx.jsx'
 import { agentHandler } from './agentHandler.js';
 import { contactHandler } from './contactHandler.js'
 import { CCP_CONFIG } from '../../ccpConfig.js';
 
 const ConnectCCP = () => {
     const containerRef = useRef(null);
-    const dispatch = useAPPDispatch();
+    const dispatch = useAppDispatch();
     const { agentRef, contactRef } = useAppRef();
 
 
@@ -114,7 +114,8 @@ const ConnectCCP = () => {
             height: '0px',
             position: 'absolute',
             left: '-9999px',
-            visibility: 'hidden'
+            visibility: 'hidden',
+            pointerEvents: 'none'
         }}
     />)
 

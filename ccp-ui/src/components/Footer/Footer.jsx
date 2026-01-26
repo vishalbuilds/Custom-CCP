@@ -1,4 +1,7 @@
 import { Wifi, Volume2 } from "lucide-react";
+import pkg from '../../../package.json'
+import { CCP_CONFIG } from "../../ccpConfig";
+
 
 export default function Footer() {
     return (<footer className="bg-slate-100 border-t px-6 py-3 flex items-center justify-between text-slate-500 text-xs font-medium">
@@ -10,6 +13,6 @@ export default function Footer() {
                 <Volume2 size={14} className="text-blue-500" /> Audio: Good
             </div>
         </div>
-        <div className="opacity-50">CCP v3.2.0 • Region: us-east-1</div>
+        <div className="opacity-50">CCP v{pkg.version} • Region: {CCP_CONFIG.region}</div>
     </footer>)
 }

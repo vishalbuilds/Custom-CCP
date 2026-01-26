@@ -2,16 +2,19 @@
 import { Settings, ExternalLink, Download, LogOut } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 import { downloadCCPLogs, ccpSignOut } from './headerHandler.js'
-import { useAppState, useAPPDispatch, useAppRef } from "../../context/ProviderCtx";
+import { useAppState, useAppDispatch, useAppRef } from "../../context/ProviderCtx.jsx";
 
 export default function SettingsButton() {
 
     const state = useAppState();
     const { agentRef } = useAppRef();
-    const dispatch = useAPPDispatch();
+    const dispatch = useAppDispatch();
 
     const settingsButtonRef = useRef(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [offlineName, setOfflineName] = useState(window.C);
+
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -22,11 +25,6 @@ export default function SettingsButton() {
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
-
-    // return (<button className="p-2 hover:bg-white/10 rounded-lg transition-colors" ref={settingsButtonRef}>
-    //     <Settings size={22} />
-    // </button>)
-
 
     return (
         <div className="relative inline-block" ref={settingsButtonRef}>

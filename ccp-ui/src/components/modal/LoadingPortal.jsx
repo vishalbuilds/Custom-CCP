@@ -9,16 +9,18 @@ export default function LoadingPortal({ agentRef }) {
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
-        // 1. BLOCK ESCAPE & KEYBOARD INTERACTION
+        if (!isVisible) return;
+
         const handleKeyDown = (e) => {
-            // Prevents Escape or any other key from interrupting the load
             e.preventDefault();
             e.stopPropagation();
         };
 
         window.addEventListener('keydown', handleKeyDown, true);
+        return () => window.removeEventListener('keydown', handleKeyDown, true);
+    }, [isVisible]);
 
-        // 2. CHECK FOR CCP INITIALIZATION (agentRef)
+    useEffect(() => {
         const checkInterval = setInterval(() => {
             if (agentRef.current) {
                 setIsVisible(false);
@@ -26,17 +28,15 @@ export default function LoadingPortal({ agentRef }) {
             }
         }, 100);
 
-        // 3. HARD RELOAD ENTIRE APP AFTER 40 SECONDS
         const reloadTimer = setTimeout(() => {
             if (!agentRef.current) {
-                console.log("CCP failed to initialize in 15s. Reloading app...");
-                window.location.reload(true); // 'true' forces a reload from the server
+                console.log("CCP failed to initialize in 50s. Reloading app...");
+                window.location.reload(true);
             }
-        }, 10000);
+        }, 50000);
 
-        // Cleanup
+
         return () => {
-            window.removeEventListener('keydown', handleKeyDown, true);
             clearInterval(checkInterval);
             clearTimeout(reloadTimer);
         };

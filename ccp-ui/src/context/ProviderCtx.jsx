@@ -14,7 +14,28 @@ const initialState = {
     currentStatus: '',
     callStatus: '',
     signOut: false,
+    navigation: 'home',
+    phoneTab: 'phoneHome',
 };
+
+function setPhoneInNavigation(payloadNav, statePhone) {
+    if (payloadNav !== "phone") {
+        return "";
+    }
+
+    switch (statePhone) {
+        case "INCOMING_CALL":
+            return "incoming";
+        case "OUTGOING_CALL":
+            return "outgoing";
+        case "MISSED_CALL":
+            return "missed";
+        default:
+            return "";
+    }
+}
+
+
 
 function Reducer(state, action) {
     switch (action.type) {
@@ -46,6 +67,33 @@ function Reducer(state, action) {
             return { ...state, callStatus: 'Connected' };
         case "CALL_ENDED":
             return { ...state, callStatus: 'Ended' };
+
+        //phone tab
+        case 'INCOMING_CALL':
+            return { ...state, phoneTab: 'incoming' };
+        case 'OUTGOING_CALL':
+            return { ...state, phoneTab: 'outgoing' };
+        case 'MISSED_CALL':
+            return { ...state, phoneTab: 'missed' };
+        case 'QC':
+            return { ...state, phoneTab: 'qc', payload: action.payload };
+        case 'DIALPAD':
+            return { ...state, phoneTab: 'dialpad' };
+        case 'PHONE_HOME':
+            return { ...state, phoneTab: 'phoneHome' };
+
+        //side bar value
+        case 'NAVIGATION':
+            const newState = { ...state, navigation: action.payload };
+            // Reset phoneTab to phoneHome when navigating to phone
+            if (action.payload === 'phone') {
+                newState.phoneTab = 'phoneHome';
+            }
+            return newState;
+
+        //default
+        default:
+            return state;
     }
 }
 
@@ -68,5 +116,5 @@ export const ProviderCtx = ({ children }) => {
 
 
 export const useAppState = () => useContext(StateContext);
-export const useAPPDispatch = () => useContext(DispatchContext);
+export const useAppDispatch = () => useContext(DispatchContext);
 export const useAppRef = () => useContext(refContext);
