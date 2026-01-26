@@ -1,16 +1,17 @@
 import 'amazon-connect-streams'
 import { useEffect, useRef, memo } from 'react';
-import { useAppDispatch, useAppRef } from '../../context/ProviderCtx.jsx'
 import { agentHandler } from './agentHandler.js';
 import { contactHandler } from './contactHandler.js'
 import { CCP_CONFIG } from '../../ccpConfig.js';
+import useCTX from './../../context/ProviderCtx.jsx';
+
+
+
+
 
 const ConnectCCP = () => {
+    const { agentRef, contactRef, dispatch } = useCTX();
     const containerRef = useRef(null);
-    const dispatch = useAppDispatch();
-    const { agentRef, contactRef } = useAppRef();
-
-
 
     // init ccp 
     useEffect(() => {

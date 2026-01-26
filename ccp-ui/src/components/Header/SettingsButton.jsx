@@ -2,17 +2,15 @@
 import { Settings, ExternalLink, Download, LogOut } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 import { downloadCCPLogs, ccpSignOut } from './headerHandler.js'
-import { useAppState, useAppDispatch, useAppRef } from "../../context/ProviderCtx.jsx";
+import useCTX from "../../context/ProviderCtx.jsx";
 
 export default function SettingsButton() {
 
-    const state = useAppState();
-    const { agentRef } = useAppRef();
-    const dispatch = useAppDispatch();
+    const { agentRef, state, dispatch } = useCTX();
 
     const settingsButtonRef = useRef(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [offlineName, setOfflineName] = useState(window.C);
+
 
 
 

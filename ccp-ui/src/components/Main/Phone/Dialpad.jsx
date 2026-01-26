@@ -1,24 +1,33 @@
 import { useState } from "react";
 import { Phone, X, ArrowLeft } from "lucide-react";
-import { useAppDispatch } from "../../../context/ProviderCtx.jsx";
+import useCTX from "../../../context/ProviderCtx.jsx";
 
 
 export default function Dialpad() {
+    const { dispatch } = useCTX();
     const [phoneInput, setPhoneInput] = useState("");
-    const dispatch = useAppDispatch();
+
+
+
+    function startCall(name, number) {
+        dispatch({ type: "CALL_CONNECTING" });
+    }
+
+
+
 
     return (
         <div className="flex-1 flex flex-col p-6">
             <div className="flex items-center mb-6">
                 <button
-                    onClick={() => dispatch({ type: "PHONE_HOME" })}
+                    onClick={() => dispatch({ type: "PHONE_HOME", payload: "phoneHome" })}
                     className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
                 >
                     <ArrowLeft size={20} />
                     Back
                 </button>
             </div>
-            
+
             <div className="max-w-xs mx-auto">
                 <div className="bg-slate-100 p-4 rounded-2xl mb-6 flex items-center">
                     <input
@@ -61,7 +70,7 @@ export default function Dialpad() {
                     ))}
                 </div>
                 <button
-                    onClick={() => startCall("Outbound Call", phoneInput)}
+                    onClick={() => startCall(phoneInput)}
                     disabled={!phoneInput}
                     className="w-full mt-6 py-4 bg-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-green-700 disabled:opacity-50 transition-all shadow-lg shadow-green-100"
                 >

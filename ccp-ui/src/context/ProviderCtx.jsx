@@ -1,9 +1,6 @@
 import { createContext, useReducer, useContext, useRef } from 'react';
 
-
-const StateContext = createContext();
-const DispatchContext = createContext();
-const refContext = createContext();
+const Context = createContext(null);
 
 
 const initialState = {
@@ -16,24 +13,10 @@ const initialState = {
     signOut: false,
     navigation: 'home',
     phoneTab: 'phoneHome',
+    phoneStatus: "noCall",
+    phoneHome: 'phoneHome'
 };
 
-function setPhoneInNavigation(payloadNav, statePhone) {
-    if (payloadNav !== "phone") {
-        return "";
-    }
-
-    switch (statePhone) {
-        case "INCOMING_CALL":
-            return "incoming";
-        case "OUTGOING_CALL":
-            return "outgoing";
-        case "MISSED_CALL":
-            return "missed";
-        default:
-            return "";
-    }
-}
 
 
 
@@ -68,30 +51,15 @@ function Reducer(state, action) {
         case "CALL_ENDED":
             return { ...state, callStatus: 'Ended' };
 
+
         //phone tab
-        case 'INCOMING_CALL':
-            return { ...state, phoneTab: 'incoming' };
-        case 'OUTGOING_CALL':
-            return { ...state, phoneTab: 'outgoing' };
-        case 'MISSED_CALL':
-            return { ...state, phoneTab: 'missed' };
-        case 'QC':
-            return { ...state, phoneTab: 'qc', payload: action.payload };
-        case 'DIALPAD':
-            return { ...state, phoneTab: 'dialpad' };
-        case 'PHONE_HOME':
-            return { ...state, phoneTab: 'phoneHome' };
+        case "NAVIGATION":
+            return { ...state, navigation: action.payload, phoneTab: 'phoneHome' };
+        case "CALL_STATUS":
+            return { ...state, phoneStatus: action.callType, payload: action.payload };
+        case "PHONE_HOME":
+            return { ...state, phoneTab: action.payload };
 
-        //side bar value
-        case 'NAVIGATION':
-            const newState = { ...state, navigation: action.payload };
-            // Reset phoneTab to phoneHome when navigating to phone
-            if (action.payload === 'phone') {
-                newState.phoneTab = 'phoneHome';
-            }
-            return newState;
-
-        //default
         default:
             return state;
     }
@@ -104,17 +72,15 @@ export const ProviderCtx = ({ children }) => {
     const [state, dispatch] = useReducer(Reducer, initialState);
 
     return (
-        <refContext.Provider value={{ agentRef, contactRef }}>
-            <StateContext.Provider value={state}>
-                <DispatchContext.Provider value={dispatch}>
-                    {children}
-                </DispatchContext.Provider>
-            </StateContext.Provider>
-        </refContext.Provider>
+        <Context.Provider value={{ agentRef, contactRef, state, dispatch }}>
+            {children}
+        </Context.Provider>
     );
 };
 
 
-export const useAppState = () => useContext(StateContext);
-export const useAppDispatch = () => useContext(DispatchContext);
-export const useAppRef = () => useContext(refContext);
+export default function useCTX() {
+    return useContext(Context)
+}
+
+

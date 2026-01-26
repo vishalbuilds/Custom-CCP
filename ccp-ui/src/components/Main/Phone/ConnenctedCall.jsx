@@ -1,4 +1,98 @@
-export default function Connected() {
+import { useState, useEffect, useRef } from "react";
+import {
+    Phone,
+    PhoneOff,
+    Mic,
+    MicOff,
+    Pause,
+    Play,
+} from "lucide-react";
+
+export default function ConnectedCall() {
+
+
+    // --- Call Logic State ---
+    const [callStatus, setCallStatus] = useState("available"); // available, connected, busy, offline, lunch, meeting
+    const [isMuted, setIsMuted] = useState(false);
+    const [isHolding, setIsHolding] = useState(false);
+    const [callDuration, setCallDuration] = useState("00:00");
+    const [timerInterval, setTimerInterval] = useState(null);
+
+    // --- Input & History State ---
+    const [phoneInput, setPhoneInput] = useState("");
+    const [contactName, setContactName] = useState("");
+    const [contactNumber, setContactNumber] = useState("");
+    const [callHistory, setCallHistory] = useState([]);
+    const [isACW, setIsACW] = useState(false);
+
+
+
+    // --- Effect: Status Timer ---
+    useEffect(() => {
+        setStatusSeconds(0);
+        const interval = setInterval(() => {
+            setStatusSeconds((prev) => prev + 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [callStatus]);
+
+    // --- Effect: Outside Click for Dropdown ---
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target))
+                setIsStatusOpen(false);
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // --- Call Functions ---
+    const startCall = (name, number) => {
+        setCallStatus("connected");
+        setContactName(name);
+        setContactNumber(number);
+        setPhoneInput("");
+
+        let seconds = 0;
+        const interval = setInterval(() => {
+            seconds++;
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            setCallDuration(
+                `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`,
+            );
+        }, 1000);
+        setTimerInterval(interval);
+    };
+
+    const endCall = () => {
+        if (timerInterval) clearInterval(timerInterval);
+
+        const entry = {
+            name: contactName || "Manual Dial",
+            number: contactNumber || phoneInput,
+            duration: callDuration,
+            time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            }),
+        };
+        setCallHistory((prev) => [entry, ...prev].slice(0, 5));
+
+        setCallStatus("busy");
+        setIsACW(true);
+
+        setTimeout(() => {
+            setIsACW(false);
+            setCallStatus("available");
+            setCallDuration("00:00");
+            setContactName("");
+            setContactNumber("");
+        }, 5000);
+    };
+
+
+
     return (
         <div className="flex flex-col items-center py-10">
             <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-white mb-6 animate-pulse">

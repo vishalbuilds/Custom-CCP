@@ -1,13 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { Phone, Search, X, ArrowLeft } from "lucide-react";
 import { getQuickConnects, StartQuickConnectCall } from "./phoneHandler.js"
-import { useAppRef, useAppDispatch } from "../../../context/ProviderCtx.jsx";
+import useCTX from "../../../context/ProviderCtx.jsx";
 
 
 export default function UserSearch() {
 
-    const { agentRef } = useAppRef();
-    const dispatch = useAppDispatch();
+    const { agentRef, dispatch } = useCTX();
     const [endpointList, setEndpointList] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [error, seterror] = useState(false);
@@ -55,7 +54,7 @@ export default function UserSearch() {
 
                 <div className="flex items-center mb-6">
                     <button
-                        onClick={() => dispatch({ type: "PHONE_HOME" })}
+                        onClick={() => dispatch({ type: "PHONE_HOME", payload: "phoneHome" })}
                         className="flex items-center gap-2 p-10 text-blue-600 hover:text-blue-800 font-medium"
                     >
                         <ArrowLeft size={20} />

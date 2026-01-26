@@ -1,9 +1,8 @@
 import { Home, PhoneCall, MessageSquare } from "lucide-react";
-import { useAppDispatch, useAppState } from "../../../context/ProviderCtx.jsx";
+import useCTX from "../../../context/ProviderCtx.jsx";
 
 export default function Nav() {
-    const dispatch = useAppDispatch();
-    const state = useAppState();
+    const { state, dispatch } = useCTX();
 
     const button = (tab, Icon) => (
         <button

@@ -3,14 +3,13 @@ import Footer from "./components/Footer/Footer.jsx";
 import Header from "./components/Header/Header.jsx";
 import Main from "./components/Main/Main.jsx";
 import LoadingPortal from "./components/modal/LoadingPortal.jsx";
-import { useAppRef, useAppState } from "./context/ProviderCtx";
+import useCTX from "./context/ProviderCtx";
 import SignOutPortal from "./components/modal/SignOutPortal.jsx";
-import pkg from "../package.json";
+
 
 
 function App() {
-  const { agentRef } = useAppRef();
-  const state = useAppState();
+  const { agentRef, state } = useCTX();
 
 
   return (

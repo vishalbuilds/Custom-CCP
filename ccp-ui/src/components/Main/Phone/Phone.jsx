@@ -5,23 +5,21 @@ import QuickConnects from "./QuickConnects.jsx"
 import DisconnectedCall from "./DisconnectedCall.jsx"
 import PhoneHome from "./PhoneHome.jsx"
 
-import { useAppState } from "../../../context/ProviderCtx.jsx"
+import useCTX from "../../../context/ProviderCtx.jsx"
 
 
 
 export default function Phone() {
-    const state = useAppState();
-
-
+    const { state } = useCTX();
 
     return (
         <>
-            {state.phoneTab == "phoneHome" && <PhoneHome />}
+            {state.phoneTab == "phoneHome" && state.phoneStatus === "noCall" && <PhoneHome />}
             {state.phoneTab == "qc" && <QuickConnects />}
-            {state.phoneTab == "dialpad" && <Dialpad />}
-            {state.phoneTab == "incoming" && <IncomingCall />}
-            {state.phoneTab == "outgoing" && <Connected />}
-            {state.phoneTab == "missed" && <DisconnectedCall />}
+            {state.phoneTab == "dialpad" && state.phoneStatus === "noCall" && <Dialpad />}
+            {state.phoneTab == "phoneHome" && state.phoneStaus == "incoming" && <IncomingCall />}
+            {state.phoneTab == "phoneHome" && state.phoneStaus == "outgoing" && <Connected />}
+            {state.phoneTab == "phoneHome" && state.phoneStaus == "missed" && <DisconnectedCall />}
         </>
     );
 
