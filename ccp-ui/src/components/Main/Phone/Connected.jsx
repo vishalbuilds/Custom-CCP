@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
+    PhoneForwarded,
     Phone,
     PhoneOff,
     Mic,
@@ -8,7 +9,7 @@ import {
     Play,
 } from "lucide-react";
 
-export default function ConnectedCall() {
+export default function Connected() {
 
 
     // --- Call Logic State ---
@@ -24,6 +25,7 @@ export default function ConnectedCall() {
     const [contactNumber, setContactNumber] = useState("");
     const [callHistory, setCallHistory] = useState([]);
     const [isACW, setIsACW] = useState(false);
+    const [statusSeconds, setStatusSeconds] = useState(0);
 
 
 
@@ -94,12 +96,13 @@ export default function ConnectedCall() {
 
 
     return (
-        <div className="flex flex-col items-center py-10">
+        <div className="flex flex-col items-center py-10 ">
+            <h3 className="text-5xl font-mono font-bold text-blue-600 m mt-15 mb-10">+15551000001</h3>
             <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-white mb-6 animate-pulse">
                 <Phone size={40} />
             </div>
-            <h3 className="text-2xl font-bold">{contactName}</h3>
-            <p className="text-slate-500">{contactNumber}</p>
+            <p className="font-semibold text-2xl text-blue-600 mb-10">incoming</p>
+
             <p className="text-4xl font-mono font-bold text-blue-600 mt-6">
                 {callDuration}
             </p>
@@ -124,10 +127,17 @@ export default function ConnectedCall() {
                 </button>
                 <button
                     onClick={endCall}
-                    className="flex flex-col items-center gap-2 p-4 rounded-2xl w-24 bg-red-600 text-white hover:bg-red-700 shadow-xl shadow-red-200 transition-all"
+                    className="flex flex-col items-center gap-2 p-4 rounded-2xl w-24 bg-red-600 text-white hover:bg-red-300 shadow-xl shadow-red-200 transition-all"
                 >
                     <PhoneOff />{" "}
                     <span className="text-xs font-bold">END</span>
+                </button>
+                <button
+                    onClick={endCall}
+                    className="flex flex-col items-center gap-2 p-4 rounded-2xl w-24 bg-blue-600 text-white hover:bg-blue-300 shadow-xl shadow-red-200 transition-all"
+                >
+                    <PhoneForwarded />{" "}
+                    <span className="text-xs font-bold">QC</span>
                 </button>
             </div>
         </div>

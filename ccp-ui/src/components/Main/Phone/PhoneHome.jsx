@@ -1,30 +1,30 @@
+import Connected from "./Connected.jsx"
+import Dialpad from "./Dialpad.jsx"
+import Incoming from "./Incoming.jsx"
+import QuickConnects from "./QuickConnects.jsx"
+import Disconnected from "./Disconnected.jsx"
+import Phone from "./Phone.jsx"
+import Missed from "./Missed.jsx"
+
 import useCTX from "../../../context/ProviderCtx.jsx"
 
 
 
 export default function PhoneHome() {
-    const { dispatch } = useCTX();
 
 
-
-    const button = (tab, tabType) => (
-        <button
-            onClick={() => dispatch({ type: "PHONE_HOME", payload: tabType })}
-            className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-300 hover:shadow-lg transition-all duration-200"
-        >
-            {tab}
-        </button>
-    );
+    const { state } = useCTX();
 
     return (
-        < div className="flex-1 flex flex-col items-center mb-30 justify-center p-10 text-center gap-4">
-            <p className=" text-slate-400 font-semibold text-3xl mb-4" >No Active Calls</p>
-            {button("Dialpad", 'dialpad')}
-            {button("Quick Connects", 'qc')}
-
-
-        </div >
-
+        <>
+            {state.phoneStatus === "noCall" && state.phoneHome == "phoneHome" && <Phone />}
+            {state.phoneHome == "qc" && <QuickConnects />}
+            {state.phoneStatus === "noCall" && state.phoneHome === "dialpad" && <Dialpad />}
+            {state.phoneStatus == "incoming" && state.phoneHome == "phoneHome" && <Incoming />}
+            {state.phoneStatus == "connected" && state.phoneHome == "phoneHome" && <Connected />}
+            {state.phoneStatus == "disconnected" && state.phoneHome == "phoneHome" && <Disconnected />}
+            {state.phoneStatus == "missed" && state.phoneHome == "phoneHome" && <Missed />}
+        </>
     );
 
 }

@@ -1,5 +1,14 @@
 import { CCP_CONFIG } from "../../ccpConfig";
 
+export function agentDetails(dispatch) {
+  const agent = new connect.Agent();
+  const config = agent.getConfiguration();
+
+  connect.Agent.getName().then((agentName) => {
+    dispatch({ type: "AGENT_NAME", payload: agentName });
+  });
+}
+
 export function changeStatus(targetStatus, agentRef, state) {
   if (state.availableStatus.includes(targetStatus)) {
     agentRef.current.setState(targetStatus, {
@@ -20,14 +29,6 @@ export function downloadCCPLogs() {
     console.error("Error downloading logs:", error);
   }
 }
-
-// export function ccpSignOut(agentRef, state) {
-//   if (state.currentStatus === offline) {
-//     signOut();
-//   } else {
-//     changeStatus(offline, agentRef, state).then(signOut).catch(console.error);
-//   }
-// }
 
 export function ccpSignOut() {
   const agent = new window.connect.Agent();

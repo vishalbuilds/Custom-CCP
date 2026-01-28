@@ -1,7 +1,5 @@
 import 'amazon-connect-streams'
 import { useEffect, useRef, memo } from 'react';
-import { agentHandler } from './agentHandler.js';
-import { contactHandler } from './contactHandler.js'
 import { CCP_CONFIG } from '../../ccpConfig.js';
 import useCTX from './../../context/ProviderCtx.jsx';
 
@@ -10,7 +8,7 @@ import useCTX from './../../context/ProviderCtx.jsx';
 
 
 const ConnectCCP = () => {
-    const { agentRef, contactRef, dispatch } = useCTX();
+    const { dispatch } = useCTX();
     const containerRef = useRef(null);
 
     // init ccp 
@@ -57,7 +55,7 @@ const ConnectCCP = () => {
                 },
                 pageOptions: {
                     enableAudioDeviceSettings: false,
-                    enablePhoneTypeSettings: false
+                    enablePhoneTypeSettings: true
                 },
                 logConfig: {
                     logLevel: connect.LogLevel.DEBUG,
@@ -65,42 +63,44 @@ const ConnectCCP = () => {
                 }
             });
 
-            // Handle agents
-            window.connect.agent((agent) => {
-                try {
+            // Handle initialization success
+            window.connect.core.onInitialized(() => {
+                dispatch({ type: 'CCP_STATUS', payload: 'initialised' });
+                console.log('CCP Initialized');
 
-                    agentRef.current = agent;
-                    agentHandler(agent, dispatch);
-
-                    dispatch({ type: 'CCP_INIT_SUCCESS' });
-                } catch (err) {
-                    dispatch({ type: 'CCP_INIT_FAILURE' });
-                    console.error("Agent init failed:", err);
-                }
             });
 
 
-            // Handle contacts
-            window.connect.contact((contact) => {
+            // Handle authentication failures
+            window.connect.core.onAuthorizeSuccess(() => {
+                console.error('Authentication success');
+                dispatch({ type: 'CCP_STATUS', payload: 'authSuccess' });
 
-                try {
-                    contactRef.current = contact;
-                    contactHandler(contact, dispatch, contactRef);
-                } catch (err) {
-                    dispatch({ type: 'CCP_INIT_FAILURE' });
-                    console.error("contact init failed:", err);
-                }
             });
-
-
 
 
             // Handle authentication failures
             window.connect.core.onAuthFail(() => {
                 console.error('Authentication failed');
-                dispatch({ type: 'AUTH_FAILED' });
+                dispatch({ type: 'CCP_STATUS', payload: 'authError' });
 
             });
+
+
+            // handle auth retry
+            window.connect.core.onAuthorizeRetriesExhausted(() => {
+                console.log('Authorization retries exhausted');
+                dispatch({ type: 'CCP_STATUS', payload: 'authErrorExhausted' });
+
+            });
+
+            window.connect.core.onAccessDenied(() => {
+                console.log('Access denied');
+                dispatch({ type: 'CCP_STATUS', payload: 'accessDenied' });
+
+            });
+
+
 
         } catch (err) {
             dispatch({ type: 'CCP_INIT_FAILURE' });

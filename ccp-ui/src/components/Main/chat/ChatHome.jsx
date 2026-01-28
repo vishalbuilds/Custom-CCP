@@ -1,5 +1,5 @@
 import { MessageSquare, } from "lucide-react";
-export default function Chat() {
+export default function ChatHome() {
 
 
 

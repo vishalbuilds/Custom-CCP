@@ -1,64 +1,68 @@
 import { createContext, useReducer, useContext, useRef } from 'react';
+import { agentDetails } from '../components/Header/headerHandler';
 
 const Context = createContext(null);
 
 
+
+
+
+/*
+
+agentDetails={
+name:verra
+allStatus: [avaial, offliek, ,....]
+currentstatus: availae,
+issoftphoeEnable: true/false
+desk phone number if enable or option too set
+}
+
+
+*/
+
 const initialState = {
+    agentPrfile: {
+        name: '',
+        allStatus: [],
+        currentstatus: '',
+        issoftphoeEnable: true,
+        deskPhoneNumber: ''
+    },
     agentName: '',
-    ccp_status: 'Loading',
     contact: '',
-    availableStatus: [],
     currentStatus: '',
-    callStatus: '',
-    signOut: false,
+    ccpStatus: 'loading',
     navigation: 'home',
-    phoneTab: 'phoneHome',
     phoneStatus: "noCall",
     phoneHome: 'phoneHome'
 };
 
 
-
-
 function Reducer(state, action) {
     switch (action.type) {
-        //ccp  value
-        case 'CCP_INIT_SUCCESS':
-            return { ...state, ccp_status: "Initialized" };
-        case 'CCP_INIT_FAILURE':
-            return { ...state, ccp_status: "CCP_Init_Failed" };
-        case 'AUTH_FAILED':
-            return { ...state, ccp_status: "Authentication_Failed" };
-        case 'CCP_SIGNOUT':
-            return { ...state, signOut: true };
-        //
-        //agent value
-        case 'AGENT_INIT_FAILURE':
-            return { ...state, agent_status: "Init_Failed", ccp_status: "Agent_Init_Failed" };
-        case 'AGENT_NAME':
-            return { ...state, agentName: action.payload };
-        case 'AVAILABLE_STATES':
-            return { ...state, availableStatus: action.payload };
-        case 'CURRENT_STATE':
-            return { ...state, currentStatus: action.payload };
-        //contact values
-        case 'NEW_CONTACT':
-            return { ...state, contact: action.payload };
-        case "CALL_CONNECTING":
-            return { ...state, callStatus: 'Connecting' };
-        case "CALL_CONNECTED":
-            return { ...state, callStatus: 'Connected' };
-        case "CALL_ENDED":
-            return { ...state, callStatus: 'Ended' };
 
+        case 'AGENT_PROFILE':
+            return { ...state, agentPrfile: { ...state.agentPrfile, ...action.payload, } }; // all agent profile name, allStatus,, currentStata, isSoftphoneEnable, deskPhoneNumber
+
+        // ccp status 
+        case 'CCP_STATUS':
+            return { ...state, ccpStatus: action.payload }; // loading, authError, initialised, signout, authErrorExhausted, accessDenied
+
+        //agent value
+        case 'AGENT_NAME':
+            return { ...state, agentName: action.payload }; // rahul, ...
+        case 'AVAILABLE_STATES':
+            return { ...state, availableStatus: action.payload }; // [offline, online, meeting, ...]
+        case 'CURRENT_STATE':
+            return { ...state, currentStatus: action.payload };  // offline / online / meeting
 
         //phone tab
         case "NAVIGATION":
-            return { ...state, navigation: action.payload, phoneTab: 'phoneHome' };
+            return { ...state, phoneHome: action.payload, navigation: action.payload }; // phonehome, chathome, home
         case "CALL_STATUS":
-            return { ...state, phoneStatus: action.callType, payload: action.payload };
+            return { ...state, phoneStatus: action.callType, contact: action.payload }; // connected, disconnected, missed, error, incomming
         case "PHONE_HOME":
-            return { ...state, phoneTab: action.payload };
+            return { ...state, phoneHome: action.payload };  //dialpad, qc, noring, connected, disconnected, missed, error, incomming
 
         default:
             return state;

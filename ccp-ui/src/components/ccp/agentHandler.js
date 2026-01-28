@@ -1,4 +1,4 @@
-export function agentHandler(agentHook, dispatch) {
+export function agentHandler(dispatch) {
   //Get agent name
   const agentName = agentHook.getName();
   dispatch({ type: "AGENT_NAME", payload: agentName });
