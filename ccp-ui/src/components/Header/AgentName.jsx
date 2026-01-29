@@ -1,11 +1,14 @@
 import { UserCircle } from 'lucide-react'
-export default function AgentName({ agentName }) {
+import useCTX from "../../context/ProviderCtx.jsx";
+
+
+export default function AgentName() {
+
+    const { state } = useCTX();
     return (<div>
-        <h1 className="text-base font-bold tracking-tight">
-            Amazon Connect Custom CCP
-        </h1>
-        <div id='agent-name' className="flex items-center gap-2 text-xs opacity-80 mt-1">
-            <UserCircle size={14} /> <span>{agentName || 'Agent not logged in'}</span><span>• Agent</span>
+
+        <div id='agent-name' className="flex items-center gap-2 text-sm m-2">
+            <UserCircle size={20} /> <h1>{state.agentConfig.firstName} {state.agentConfig.lastName} ({state.agentConfig.username}) • Agent</h1>
         </div>
     </div>)
 }

@@ -1,18 +1,41 @@
 import { CCP_CONFIG } from "../../ccpConfig";
 
-export function agentDetails(dispatch) {
-  const agent = new connect.Agent();
-  const config = agent.getConfiguration();
+// /**
+// Get all agent existing config from instances.
+//  * @param {function} dispatch - context function to set state value
+// */
+// export function agentConfig(dispatch) {
+//   const agent = new connect.Agent();
+//   const config = agent.getConfiguration();
+//   dispatch({ type: "AGENT_CONFIG", payload: config });
+// }
 
-  connect.Agent.getName().then((agentName) => {
-    dispatch({ type: "AGENT_NAME", payload: agentName });
-  });
+/**
+get current agent status in remote and set in state.
+ * @param {function} dispatch - context function to set state value 
+*/
+export function currentStatus(dispatch) {
+  const agent = new connect.Agent();
+  const currentStatus = agent.getAvailabilityState();
+  dispatch({ type: "CURRENT_STATUS", payload: currentStatus });
 }
 
-export function changeStatus(targetStatus, agentRef, state) {
-  if (state.availableStatus.includes(targetStatus)) {
-    agentRef.current.setState(targetStatus, {
-      success: () => console.log("Status changed to:", targetStatus),
+/**
+Change agent status in remote and in state.
+ * @param {function} state - context function to get set
+ * @param {function} dispatch - context function to set state value 
+ * @param {string} targetStatus - target status to set in remote
+*/
+export function changeStatus(state, dispatch, targetStatus) {
+  const agent = new connect.Agent();
+  const targetState = state.agentConfig.agentStates.find(
+    (agentState) => agentState.type === targetStatus,
+  );
+
+  if (targetState) {
+    agent.setState(targetState, {
+      success: () =>
+        dispatch({ type: "CURRENT_STATUS", payload: targetState }),
       failure: (err) => console.error("Failed to change status:", err),
     });
   } else {
@@ -20,21 +43,22 @@ export function changeStatus(targetStatus, agentRef, state) {
   }
 }
 
+/**
+ Download ccp Ephemeral logs
+ */
 export function downloadCCPLogs() {
   try {
-    console.log("Downloading logs...");
     connect.getLog().download();
-    console.log("Logs downloaded successfully.");
   } catch (error) {
     console.error("Error downloading logs:", error);
   }
 }
 
+/**
+ Sign out function 
+ */
 export function ccpSignOut() {
-  const agent = new window.connect.Agent();
-  if (
-    agent.getAvailabilityState().type === window.connect.AgentStatusType.OFFLINE
-  ) {
+  if (agent.getAvailabilityState().type === connect.AgentStatusType.OFFLINE) {
     signOut();
   } else {
     setAgentOffline().then(signOut).catch(console.error);
@@ -46,7 +70,7 @@ function setAgentOffline() {
     const agent = new window.connect.Agent();
     const offlineState = agent
       .getAgentStates()
-      .find((state) => state.type === window.connect.AgentStateType.OFFLINE);
+      .find((state) => state.type === connect.AgentStateType.OFFLINE);
     agent.setState(
       offlineState,
       {
@@ -92,6 +116,6 @@ function signOut() {
 //     .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 // }
 
-// export function statusDuration(agentRef) {
-//   return agentRef.current.getStateDuration();
-// }
+// // export function statusDuration(agentRef) {
+// //   return agentRef.current.getStateDuration();
+// // }

@@ -24,24 +24,28 @@ A modern, responsive Contact Control Panel built with React and Vite for Amazon 
 ## 🎨 UI Components & Styling
 
 ### Tailwind CSS
+
 This project uses **Tailwind CSS** for styling, providing:
+
 - Utility-first CSS framework
 - Responsive design system
 - Custom color schemes and spacing
 - Component-based styling approach
 
 ### Lucide React Icons
+
 **Lucide React** is used for all icons throughout the application:
+
 - Consistent icon design language
 - Lightweight and performant
 - Extensive icon library
 - Easy customization and theming
 
 ```jsx
-import { Phone, MessageCircle, Settings, User } from 'lucide-react';
+import { Phone, MessageCircle, Settings, User } from "lucide-react";
 
 // Usage example
-<Phone className="w-5 h-5 text-blue-600" />
+<Phone className="w-5 h-5 text-blue-600" />;
 ```
 
 ## 🚀 Getting Started
@@ -55,19 +59,22 @@ import { Phone, MessageCircle, Settings, User } from 'lucide-react';
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
-   cd ccp-ui
+   cd custom-ccp
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure Amazon Connect**
-   
+
    Update the CCP configuration in `src/ccpConfig.js`:
+
    ```javascript
    export const CCP_CONFIG = {
      ccp_domain: "https://your-connect-instance.my.connect.aws",
@@ -78,16 +85,17 @@ import { Phone, MessageCircle, Settings, User } from 'lucide-react';
 ### 🏃‍♂️ Running Locally
 
 1. **Start the development server**
+
    ```bash
    npm run dev
    ```
 
 2. **Open your browser**
-   
+
    Navigate to `http://localhost:5173` (or the port shown in your terminal)
 
 3. **Login with your Amazon Connect credentials**
-   
+
    Use your agent credentials to access the CCP interface
 
 ### 📦 Build for Production
@@ -106,7 +114,6 @@ npm run preview
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build locally
 - `npm run lint` - Run ESLint for code quality checks
-
 
 ## 🔧 Configuration
 
@@ -137,6 +144,7 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 ## 🆘 Support
 
 For issues and questions:
+
 - Check the Amazon Connect documentation
 - Review the amazon-connect-streams library documentation
 - Open an issue in this repository

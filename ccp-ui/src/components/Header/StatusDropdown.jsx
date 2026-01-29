@@ -1,12 +1,17 @@
 import { ChevronDown } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { changeStatus } from './headerHandler.js'
+import useCtx from "../../context/ProviderCtx.jsx";
 
-export default function StatusDropdown({ currentStatus, availableStatuses, agentRef, state }) {
+
+
+export default function StatusDropdown() {
+    const { state, dispatch } = useCtx();
 
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    // use to auto close the bubble
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -33,7 +38,7 @@ export default function StatusDropdown({ currentStatus, availableStatuses, agent
             className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-xl transition-all min-w-37.5"
         >
             <span className="font-semibold text-white">
-                {currentStatus ? formatLabel(currentStatus) : "Select Status"}
+                {state.currentStatus ? formatLabel(state.currentStatus) : "Select Status"}
             </span>
             <ChevronDown
                 size={16}
@@ -47,15 +52,15 @@ export default function StatusDropdown({ currentStatus, availableStatuses, agent
                     Set Your Status
                 </p>
 
-                {availableStatuses.map((targetStatus) => (
+                {state.agentConfig.agentStates?.map((targetStatus) => (
                     <button
                         key={targetStatus?.name || targetStatus?.type || targetStatus}
                         onClick={() => {
-                            changeStatus(targetStatus, agentRef, state)
+                            changeStatus(state, dispatch, targetStatus.type)
                             setIsStatusOpen(false);
                         }}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50 
-                                ${(currentStatus?.name || currentStatus) === (targetStatus?.name || targetStatus?.type || targetStatus) ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-600"}`}
+                                ${(state.currentStatus) === (targetStatus?.name || targetStatus?.type || targetStatus) ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-600"}`}
                     >
                         {/* Only the label with first letter capitalized */}
                         {formatLabel(targetStatus)}

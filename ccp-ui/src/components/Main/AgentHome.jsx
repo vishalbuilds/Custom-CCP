@@ -7,7 +7,6 @@ export default function AgentHome({ agentName }) {
             </div>
             <h2 className="text-3xl font-bold text-slate-800">
                 Welcome, {agentName}
-
             </h2>
         </div>
     )

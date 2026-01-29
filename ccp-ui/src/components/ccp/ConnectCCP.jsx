@@ -8,7 +8,7 @@ import useCTX from './../../context/ProviderCtx.jsx';
 
 
 const ConnectCCP = () => {
-    const { dispatch } = useCTX();
+    const { dispatch, state } = useCTX();
     const containerRef = useRef(null);
 
     // init ccp 
@@ -63,16 +63,10 @@ const ConnectCCP = () => {
                 }
             });
 
-            // Handle initialization success
-            window.connect.core.onInitialized(() => {
-                dispatch({ type: 'CCP_STATUS', payload: 'initialised' });
-                console.log('CCP Initialized');
-
-            });
 
 
             // Handle authentication failures
-            window.connect.core.onAuthorizeSuccess(() => {
+            connect.core.onAuthorizeSuccess(() => {
                 console.error('Authentication success');
                 dispatch({ type: 'CCP_STATUS', payload: 'authSuccess' });
 
@@ -80,7 +74,7 @@ const ConnectCCP = () => {
 
 
             // Handle authentication failures
-            window.connect.core.onAuthFail(() => {
+            connect.core.onAuthFail(() => {
                 console.error('Authentication failed');
                 dispatch({ type: 'CCP_STATUS', payload: 'authError' });
 
@@ -88,18 +82,35 @@ const ConnectCCP = () => {
 
 
             // handle auth retry
-            window.connect.core.onAuthorizeRetriesExhausted(() => {
+            connect.core.onAuthorizeRetriesExhausted(() => {
                 console.log('Authorization retries exhausted');
                 dispatch({ type: 'CCP_STATUS', payload: 'authErrorExhausted' });
 
             });
 
-            window.connect.core.onAccessDenied(() => {
+            // handle access denied
+            connect.core.onAccessDenied(() => {
                 console.log('Access denied');
                 dispatch({ type: 'CCP_STATUS', payload: 'accessDenied' });
 
             });
 
+            // handle getting agent config
+            connect.agent((agent) => {
+                const config = agent.getConfiguration();
+                dispatch({ type: "AGENT_CONFIG", payload: config });
+
+                const currentStatus = agent.getAvailabilityState();
+                dispatch({ type: "CURRENT_STATUS", payload: currentStatus });
+            })
+
+
+            // Handle initialization success
+            connect.core.onInitialized(() => {
+                dispatch({ type: 'CCP_STATUS', payload: 'initialised' });
+                console.log('CCP Initialized');
+
+            });
 
 
         } catch (err) {
