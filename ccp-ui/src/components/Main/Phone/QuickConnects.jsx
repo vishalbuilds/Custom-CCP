@@ -6,7 +6,7 @@ import useCTX from "../../../context/ProviderCtx.jsx";
 
 export default function UserSearch() {
 
-    const { agentRef, dispatch } = useCTX();
+    const { dispatch } = useCTX();
     const [endpointList, setEndpointList] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [error, seterror] = useState(false);
@@ -17,7 +17,6 @@ export default function UserSearch() {
     useEffect(() => {
         try {
             getQuickConnects(
-                agentRef,
                 (endpoints) => setEndpointList(endpoints),
                 console.error
             );
@@ -29,7 +28,7 @@ export default function UserSearch() {
 
     function startCall(qc) {
 
-        StartQuickConnectCall(qc, agentRef)
+        StartQuickConnectCall(qc)
             .then(dispatch({ type: "QC", payload: qc }), seterror(false))
             .catch(seterror(true));
 

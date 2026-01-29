@@ -1,25 +1,5 @@
 import { CCP_CONFIG } from "../../ccpConfig";
 
-// /**
-// Get all agent existing config from instances.
-//  * @param {function} dispatch - context function to set state value
-// */
-// export function agentConfig(dispatch) {
-//   const agent = new connect.Agent();
-//   const config = agent.getConfiguration();
-//   dispatch({ type: "AGENT_CONFIG", payload: config });
-// }
-
-/**
-get current agent status in remote and set in state.
- * @param {function} dispatch - context function to set state value 
-*/
-export function currentStatus(dispatch) {
-  const agent = new connect.Agent();
-  const currentStatus = agent.getAvailabilityState();
-  dispatch({ type: "CURRENT_STATUS", payload: currentStatus });
-}
-
 /**
 Change agent status in remote and in state.
  * @param {function} state - context function to get set
@@ -34,8 +14,7 @@ export function changeStatus(state, dispatch, targetStatus) {
 
   if (targetState) {
     agent.setState(targetState, {
-      success: () =>
-        dispatch({ type: "CURRENT_STATUS", payload: targetState }),
+      success: () => dispatch({ type: "CURRENT_STATUS", payload: targetState }),
       failure: (err) => console.error("Failed to change status:", err),
     });
   } else {
@@ -58,6 +37,7 @@ export function downloadCCPLogs() {
  Sign out function 
  */
 export function ccpSignOut() {
+  const agent = new connect.Agent();
   if (agent.getAvailabilityState().type === connect.AgentStatusType.OFFLINE) {
     signOut();
   } else {
@@ -67,7 +47,7 @@ export function ccpSignOut() {
 
 function setAgentOffline() {
   return new Promise((resolve, reject) => {
-    const agent = new window.connect.Agent();
+    const agent = new connect.Agent();
     const offlineState = agent
       .getAgentStates()
       .find((state) => state.type === connect.AgentStateType.OFFLINE);
@@ -89,6 +69,23 @@ function signOut() {
       connect.core.getUpstream().sendUpstream(connect.EventType.TERMINATE);
     },
   );
+}
+
+/**
+ softphone enable
+ */
+
+export function SoftphoneDeskPhoneHandler(newConfigObj) {
+  const config = connect.agent.getConfiguration();
+  const newConfig = {
+    ...config,
+    ...newConfigObj,
+  };
+
+  agent.setConfiguration(newConfig, {
+    success: () => console.log("Updated agent configuration"),
+    failure: () => console.log("Failed to update agent configuration"),
+  });
 }
 
 // //agent status duration timers

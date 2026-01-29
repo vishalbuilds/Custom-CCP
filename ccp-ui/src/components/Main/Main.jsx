@@ -14,6 +14,7 @@ export default function Main() {
                 {state.navigation === "home" && <AgentHome agentName={state.agentConfig.firstName} />}
                 {state.navigation === "phoneHome" && <PhoneHome />}
                 {state.navigation === "chatHome" && <ChatHome />}
+
             </main>
         </div>)
 }

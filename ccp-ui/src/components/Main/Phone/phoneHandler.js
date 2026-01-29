@@ -1,25 +1,24 @@
-export function getQuickConnects(agentRef, onSuccess) {
+export function getQuickConnects(onSuccess) {
+  const agent = new connect.Agent();
   const defaultOutboundQueueARN =
-    agentRef.current.getRoutingProfile().defaultOutboundQueue.queueARN;
+    agent.getRoutingProfile().defaultOutboundQueue.queueARN;
 
-  const routingProfileQueueARNs = agentRef.current.getAllQueueARNs();
+  const routingProfileQueueARNs = agent.getAllQueueARNs();
 
-  agentRef.current.getEndpoints(
-    routingProfileQueueARNs.concat(defaultOutboundQueueARN),
-    {
-      success: ({ endpoints }) => {
-        onSuccess?.(endpoints);
-      },
-      failure: (err) => {
-        console.error("Failed to retrieve quick connects", err);
-      },
+  agent.getEndpoints(routingProfileQueueARNs.concat(defaultOutboundQueueARN), {
+    success: ({ endpoints }) => {
+      onSuccess?.(endpoints);
     },
-  );
+    failure: (err) => {
+      console.error("Failed to retrieve quick connects", err);
+    },
+  });
 }
 
-export function StartQuickConnectCall(endpoint, agentRef) {
+export function StartQuickConnectCall(endpoint) {
+  const agent = new connect.Agent();
   return new Promise((resolve, reject) => {
-    agentRef.current.connect(endpoint, {
+    agent.connect(endpoint, {
       success: () => {
         console.log(`Started call with endpoint: ${endpoint}`);
         resolve();
