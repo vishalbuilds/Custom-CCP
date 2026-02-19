@@ -17,9 +17,9 @@ export default function PhoneHome() {
 
     return (
         <>
-            {state.phoneStatus === "noCall" && state.phoneHome == "phoneHome" && <Phone />}
+            {state.phoneStatus === "idle" && state.phoneHome == "phoneHome" && <Phone />}
             {state.phoneHome == "qc" && <QuickConnects />}
-            {state.phoneStatus === "noCall" && state.phoneHome === "dialpad" && <Dialpad />}
+            {state.phoneStatus === "idle" && state.phoneHome === "dialpad" && <Dialpad />}
             {state.phoneStatus == "incoming" && state.phoneHome == "phoneHome" && <Incoming />}
             {state.phoneStatus == "connected" && state.phoneHome == "phoneHome" && <Connected />}
             {state.phoneStatus == "disconnected" && state.phoneHome == "phoneHome" && <Disconnected />}

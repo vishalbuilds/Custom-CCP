@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext, useRef } from 'react';
+import { createContext, useReducer, useContext, act } from 'react';
 
 
 const Context = createContext(null);
@@ -10,7 +10,6 @@ const Context = createContext(null);
 /*
 
 // agent config mapping
-{
     "name": "test",
     "username": "test",
     "firstName": "test",
@@ -93,8 +92,15 @@ const initialState = {
     currentStatus: '',
     ccpStatus: 'loading',
     navigation: 'home',
-    phoneStatus: "noCall",
-    phoneHome: 'phoneHome'
+    phoneStatus: "idle",
+    phoneHome: 'phoneHome',
+    notificationOverlay: {
+        overlay: false, // true, false
+        button: 'enter', // enter, refresh, close
+        heading: '',  // DeskPhone=>Softphone,  Softphoe => Deskphone ,error, Are you sure?
+        message: '', // enter you desk phone number, contry name
+    },
+    error: null
 };
 
 
@@ -102,7 +108,7 @@ function Reducer(state, action) {
     switch (action.type) {
 
         case 'AGENT_CONFIG':
-            return { ...state, agentConfig: action.payload }; // all agent profile name, allStatus,, currentStata, isSoftphoneEnable, deskPhoneNumber
+            return { ...state, agentConfig: { ...state.agentConfig, ...action.payload } }; // all agent profile name, allStatus,, currentStata, isSoftphoneEnable, deskPhoneNumber
 
         // ccp initialsed status 
         case 'CCP_STATUS':
@@ -116,9 +122,11 @@ function Reducer(state, action) {
         case "NAVIGATION":
             return { ...state, phoneHome: action.payload, navigation: action.payload }; // phonehome, chathome, home
         case "CALL_STATUS":
-            return { ...state, phoneStatus: action.callType, contact: action.payload }; // connected, disconnected, missed, error, incomming
+            return { ...state, phoneStatus: action.callType, contact: action.payload, error: action.error }; // connected, disconnected, missed, error, incomming
         case "PHONE_HOME":
             return { ...state, phoneHome: action.payload };  //dialpad, qc, noring, connected, disconnected, missed, error, incomming
+        case 'NOTIFICATION_VERLAY':
+            return { ...state, notificationOverlay: { ...state.notificationOverlay, ...action.payload } }; // for phone call comming, deskphone to softphone change, chat incomming,
 
         default:
             return state;

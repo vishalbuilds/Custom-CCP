@@ -31,8 +31,7 @@ export default function StatusDropdown() {
 
 
 
-
-    return (<div id='status-dropdown' className="relative" ref={dropdownRef}>
+    return (<div id='status-dropdown' className="relative " ref={dropdownRef}>
         <button
             onClick={() => setIsStatusOpen(!isStatusOpen)}
             className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-xl transition-all min-w-37.5"
@@ -59,7 +58,7 @@ export default function StatusDropdown() {
                             changeStatus(state, dispatch, targetStatus.type)
                             setIsStatusOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50 
+                        className={`w-full flex  items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50 
                                 ${(state.currentStatus) === (targetStatus?.name || targetStatus?.type || targetStatus) ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-600"}`}
                     >
                         {/* Only the label with first letter capitalized */}

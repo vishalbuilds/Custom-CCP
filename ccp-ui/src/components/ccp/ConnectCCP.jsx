@@ -8,8 +8,94 @@ import useCTX from './../../context/ProviderCtx.jsx';
 
 
 const ConnectCCP = () => {
-    const { dispatch, state } = useCTX();
+    const { dispatch } = useCTX();
     const containerRef = useRef(null);
+
+
+    //initCCP fuction 
+    const initCCP = () => {
+        if (!containerRef.current || !window.connect) {
+            dispatch({ type: 'CCP_INIT_FAILURE' });
+            console.error('Container or window.connect not found');
+            return
+        };
+
+        try {
+            window.connect.core.initCCP(containerRef.current, {
+                ccpUrl: `${CCP_CONFIG.ccp_domain}/connect/ccp-v2/`,
+                loginPopup: true,
+                loginPopupAutoClose: true,
+                softphone: {
+                    allowFramedSoftphone: true
+                },
+                pageOptions: {
+                    enableAudioDeviceSettings: false,
+                    enablePhoneTypeSettings: true
+                },
+                logConfig: {
+                    logLevel: window.connect.LogLevel.DEBUG,
+                    echoLevel: window.connect.LogLevel.DEBUG,
+                }
+            });
+
+
+
+            // Handle authentication failures
+            window.connect.core.onAuthorizeSuccess(() => {
+                console.error('Authentication success');
+                dispatch({ type: 'CCP_STATUS', payload: 'authSuccess' });
+
+            });
+
+
+            // Handle authentication failures
+            window.connect.core.onAuthFail(() => {
+                console.error('Authentication failed');
+                dispatch({ type: 'CCP_STATUS', payload: 'authError' });
+
+            });
+
+
+            // handle auth retry
+            window.connect.core.onAuthorizeRetriesExhausted(() => {
+                console.log('Authorization retries exhausted');
+                dispatch({ type: 'CCP_STATUS', payload: 'authErrorExhausted' });
+
+            });
+
+            // handle access denied
+            window.connect.core.onAccessDenied(() => {
+                console.log('Access denied');
+                dispatch({ type: 'CCP_STATUS', payload: 'accessDenied' });
+
+            });
+
+            // handle getting agent config
+            window.connect.agent((agent) => {
+                const config = agent.getConfiguration();
+                dispatch({ type: "AGENT_CONFIG", payload: config });
+
+                const currentStatus = agent.getAvailabilityState();
+                dispatch({ type: "CURRENT_STATUS", payload: currentStatus });
+            })
+
+
+            // Handle initialization success
+            window.connect.core.onInitialized(() => {
+                dispatch({ type: 'CCP_STATUS', payload: 'initialised' });
+                console.log('CCP Initialized');
+
+            });
+
+
+        } catch (err) {
+            dispatch({ type: 'CCP_INIT_FAILURE' });
+            console.error('CCP Init Error:', err);
+        }
+
+    };
+
+
 
     // init ccp 
     useEffect(() => {
@@ -35,90 +121,17 @@ const ConnectCCP = () => {
         } else {
             initCCP();
         }
-    }, []);
 
-    //initCCP fuction 
-    const initCCP = () => {
-        if (!containerRef.current || !window.connect) {
-            dispatch({ type: 'CCP_INIT_FAILURE' });
-            console.error('Container or window.connect not found');
-            return
+        // Cleanup
+        return () => {
+            if (window.connect && window.connect.core) {
+                window.connect.core.terminate();
+            }
         };
-
-        try {
-            window.connect.core.initCCP(containerRef.current, {
-                ccpUrl: `${CCP_CONFIG.ccp_domain}/connect/ccp-v2/`,
-                loginPopup: true,
-                loginPopupAutoClose: true,
-                softphone: {
-                    allowFramedSoftphone: true
-                },
-                pageOptions: {
-                    enableAudioDeviceSettings: false,
-                    enablePhoneTypeSettings: true
-                },
-                logConfig: {
-                    logLevel: connect.LogLevel.DEBUG,
-                    echoLevel: connect.LogLevel.DEBUG,
-                }
-            });
+    });
 
 
 
-            // Handle authentication failures
-            connect.core.onAuthorizeSuccess(() => {
-                console.error('Authentication success');
-                dispatch({ type: 'CCP_STATUS', payload: 'authSuccess' });
-
-            });
-
-
-            // Handle authentication failures
-            connect.core.onAuthFail(() => {
-                console.error('Authentication failed');
-                dispatch({ type: 'CCP_STATUS', payload: 'authError' });
-
-            });
-
-
-            // handle auth retry
-            connect.core.onAuthorizeRetriesExhausted(() => {
-                console.log('Authorization retries exhausted');
-                dispatch({ type: 'CCP_STATUS', payload: 'authErrorExhausted' });
-
-            });
-
-            // handle access denied
-            connect.core.onAccessDenied(() => {
-                console.log('Access denied');
-                dispatch({ type: 'CCP_STATUS', payload: 'accessDenied' });
-
-            });
-
-            // handle getting agent config
-            connect.agent((agent) => {
-                const config = agent.getConfiguration();
-                dispatch({ type: "AGENT_CONFIG", payload: config });
-
-                const currentStatus = agent.getAvailabilityState();
-                dispatch({ type: "CURRENT_STATUS", payload: currentStatus });
-            })
-
-
-            // Handle initialization success
-            connect.core.onInitialized(() => {
-                dispatch({ type: 'CCP_STATUS', payload: 'initialised' });
-                console.log('CCP Initialized');
-
-            });
-
-
-        } catch (err) {
-            dispatch({ type: 'CCP_INIT_FAILURE' });
-            console.error('CCP Init Error:', err);
-        }
-
-    };
     return (<div
         ref={containerRef}
         style={{
@@ -134,76 +147,3 @@ const ConnectCCP = () => {
 };
 
 export default memo(ConnectCCP);
-
-
-
-
-// // Function to change agent status
-// const changeStatus = (statusName) => {
-//     if (!agentRef.current) {
-//         console.error('Agent not initialized');
-//         return;
-//     }
-
-//     const targetState = agentStates.find(state =>
-//         state.name.toLowerCase() === statusName.toLowerCase()
-//     );
-
-//     if (targetState) {
-//         agentRef.current.setState(targetState, {
-//             success: () => console.log('Status changed to:', statusName),
-//             failure: (err) => console.error('Failed to change status:', err)
-//         });
-//     } else {
-//         console.error('Status not found:', statusName);
-//     }
-// };
-
-
-// return (
-//     <div className="p-4 bg-gray-50 rounded-lg">
-//         <div className="mb-4">
-//             <h2 className="text-xl font-bold mb-2">CCP Status</h2>
-//             <p className="text-sm">
-//                 <strong>Agent:</strong> {agentName || 'Not logged in'}
-//             </p>
-//             <p className="text-sm">
-//                 <strong>Status:</strong> {currentStatus}
-//             </p>
-//             <p className="text-sm">
-//                 <strong>Initialized:</strong> {isInitialized ? 'Yes' : 'No'}
-//             </p>
-//         </div>
-
-//         {isInitialized && agentStates.length > 0 && (
-//             <div className="mb-4">
-//                 <h3 className="font-semibold mb-2">Available States:</h3>
-//                 <div className="flex gap-2 flex-wrap">
-//                     {agentStates.map((state) => (
-//                         <button
-//                             key={state.name}
-//                             onClick={() => changeStatus(state.name)}
-//                             className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-//                         >
-//                             {state.name}
-//                         </button>
-//                     ))}
-//                 </div>
-//             </div>
-//         )}
-
-//         {/* Hidden CCP Container */}
-//         <div
-//             ref={containerRef}
-//             style={{
-//                 width: '0px',
-//                 height: '0px',
-//                 position: 'absolute',
-//                 left: '-9999px',
-//                 visibility: 'hidden'
-//             }}
-//         />
-//     </div>
-// );
-
-

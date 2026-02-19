@@ -32,4 +32,4 @@ export default function Phone() {
 
 
 // {state.phoneTab == "qc" && <QuickConnects />}
-// {state.phoneStatus === "noCall" && <Dialpad />}
+// {state.phoneStatus === "idle" && <Dialpad />}

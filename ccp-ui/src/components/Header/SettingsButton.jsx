@@ -1,20 +1,16 @@
-
-import { Settings, ExternalLink, Download, LogOut, Smartphone, Headphones, HeadphoneOff } from 'lucide-react'
+import { Settings, ExternalLink, Download, LogOut, Headphones, HeadphoneOff, ToggleLeft, ToggleRight } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 import { downloadCCPLogs, ccpSignOut, SoftphoneDeskPhoneHandler } from './headerHandler.js'
 import useCTX from "../../context/ProviderCtx.jsx";
 import { isValidPhoneNumber } from 'libphonenumber-js/min'
 
 export default function SettingsButton() {
-
     const { state, dispatch } = useCTX();
-
     const settingsButtonRef = useRef(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [deskPhone, setDeskPhone] = useState(false);
-    const [phoneNumbers, setPhoneNumbers] = useState();
-
-
+    const [open, setOpen] = useState(false);
+    const [phoneNumbers, setPhoneNumbers] = useState(state.agentConfig.extension || '');
+    const [isDeskPhoneEnabled, setIsDeskPhoneEnabled] = useState(false);
 
 
 
@@ -28,96 +24,127 @@ export default function SettingsButton() {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-
+    // Handle phone configuration changes
     useEffect(() => {
-        if (deskPhone && isValidPhoneNumber(phoneNumbers)) {
-            newConfigObj = { softphoneEnabled: false, extension: phoneNumbers, }
-            SoftphoneDeskPhoneHandler(state, dispatch, newConfigObj)
+        if (isValidPhoneNumber(String(phoneNumbers))) {
+            const newConfigObj = {
+                extension: phoneNumbers
+            }
+            SoftphoneDeskPhoneHandler(dispatch, newConfigObj)
 
+        } else if (phoneNumbers === '') {
+            const newConfigObj = {
+                softphoneEnabled: true,
+            }
+            SoftphoneDeskPhoneHandler(dispatch, newConfigObj)
         }
     }, [phoneNumbers])
 
 
+
+    useEffect(() => {
+        if (isDeskPhoneEnabled && phoneNumbers) {
+            const newConfigObj = {
+                softphoneEnabled: false,
+            }
+            SoftphoneDeskPhoneHandler(dispatch, newConfigObj)
+
+        } else if (!isDeskPhoneEnabled) {
+            const newConfigObj = {
+                softphoneEnabled: true,
+            }
+            SoftphoneDeskPhoneHandler(dispatch, newConfigObj)
+        }
+    }, [isDeskPhoneEnabled, phoneNumbers])
+
+
+
     return (
-        <div className="relative inline-block" ref={settingsButtonRef}>
+        <div className="relative" ref={settingsButtonRef}>
             {/* Trigger Button */}
             <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-xl transition-all min-w-5"
             >
-                <Settings size={22} className={`ml-auto text-white transition-transform ${isSettingsOpen ? "rotate-180" : ""}`} />
+                <Settings size={20} />
             </button>
 
             {/* Dropdown Menu */}
-            {
-                isSettingsOpen && (
-                    <div className="absolute right-0 mt-3 w-45 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-120 animate-in fade-in slide-in-from-top-2">
-                        <div className="py-1">
+            {isSettingsOpen && (
+                <div className="absolute right-0 top-full mt-2 w-50 bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden z-50">
+                    {/* open endpoint utility url */}
+                    <button
+                        onClick={() => window.open("https://tools.connect.aws/endpoint-test/", "_blank", "noreferrer")}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-slate-700"
+                    >
+                        <ExternalLink size={18} className='text-blue-700' />
+                        <span>Endpoint Test</span>
+                    </button>
 
-                            {/*  open endpoint utility url */}
-                            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50   text-slate-600"
-                                onClick={() => window.open("https://tools.connect.aws/endpoint-test/", "_blank", "noreferrer")}>
-                                <div className="flex items-center gap-3">
-                                    <ExternalLink size={18} />
-                                    <span>Endpoint Test</span>
-                                </div>
-                            </button>
+                    {/* SoftPhone enable */}
+                    <button
+                        onClick={() =>
+                            setOpen((prev) => !prev)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-slate-700 transition-colors ${isDeskPhoneEnabled ? 'bg-red-200 hover:bg-red-100' : ' hover:bg-slate-50'
+                            }`}
+                    >
+                        {!isDeskPhoneEnabled ? (
+                            <Headphones size={18} className="text-blue-600" />
+                        ) : (
+                            <HeadphoneOff size={18} />
+                        )}
+                        <span className="flex-1 text-left">SoftPhone</span>
 
+                    </button>
 
-
-
-                            {/* SoftPhone enable */}
-                            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50   text-slate-600"
-                                onClick={() => { setDeskPhone((prev) => !prev) }}>
-
-                                {deskPhone ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
-                                <span>SoftPhone</span>
-                            </button>
-
-
-                            {/* deskPhone details
-                            {deskPhone && <button className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50   text-slate-600"
-                                onClick={() => { }}>
-                                <Smartphone size={18} />
-                                <span>DeskPhone</span>
-                            </button>} */}
-
-                            {/* deskPhone details */}
-                            {deskPhone && <input
-                                type='number'
-                                max='15'
-                                min='5'
-                                placeholder="Phone number..."
-                                value={phoneNumbers}
-                                onChange={(e) => setPhoneNumbers(e.target.value)}
-                                className="w-40 flex items-center gap-3 p-1 m-2  bg-white border border-slate-200 rounded-xl  focus:ring-blue-500 focus:border-transparent transition-all text-slate-700"
-                            />}
-
-
-
-
-
-
-                            {/*  download ccp logs */}
-                            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-slate-50   text-slate-600"
-                                onClick={() => { downloadCCPLogs() }}>
-                                <div className="flex items-center gap-3">
-                                    <Download size={18} />
-                                    <span>Download Logs</span>
-                                </div>
-                            </button>
-
-                            {/* signout */}
-                            <button className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t border-white/5"
-                                onClick={() => { ccpSignOut(state); dispatch({ type: 'CCP_STATUS', payload: 'signout' }); }}>
-                                <LogOut size={18} />
-                                <span>Sign Out</span>
-                            </button>
-
+                    {/* DeskPhone number config */}
+                    {open && (
+                        <div className="px-4 py-3 bg-slate-50 border-t border-slate-200">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="tel"
+                                    placeholder="Desk Phone Number"
+                                    value={phoneNumbers}
+                                    onChange={(e) => setPhoneNumbers(e.target.value)}
+                                    className="flex-1 p-2 bg-white border w-30 border-slate-200 rounded-lg  transition-all text-slate-700 text-sm"
+                                />
+                                <button
+                                    onClick={() => setIsDeskPhoneEnabled(pre => !pre)}
+                                    className="shrink-0"
+                                >
+                                    {isDeskPhoneEnabled ? (
+                                        <ToggleRight size={24} className="text-red-400" />
+                                    ) : (
+                                        <ToggleLeft size={24} className="text-blue-600" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                )
-            }
-        </div >
+                    )}
+
+                    {/* download ccp logs */}
+                    <button
+                        onClick={() => downloadCCPLogs()}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-slate-700"
+                    >
+                        <Download size={18} />
+                        <span>Download Logs</span>
+                    </button>
+
+                    {/* signout */}
+                    <button
+                        onClick={() => {
+                            ccpSignOut(state);
+                            dispatch({ type: 'CCP_STATUS', payload: 'signout' });
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600 border-t border-slate-200"
+                    >
+                        <LogOut size={18} />
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            )}
+
+        </div>
     )
 }
